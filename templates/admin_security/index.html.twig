@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+ {% block stylesheets %}
+     {{ parent() }}
+     <link rel="stylesheet"
+           href="{{ asset('admin/css/bulma.min.css') }}">
+ {% endblock %}
+
+{% block body %}
+{% include 'admin_security/content.html.twig' %}
+{% endblock %}

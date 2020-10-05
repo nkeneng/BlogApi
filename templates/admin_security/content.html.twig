@@ -1,0 +1,69 @@
+<section class="section">
+    <h1 class="h3 has-text-centered title is-2 mb-3 font-weight-normal">
+        Please sign in</h1>
+
+    <div class="columns">
+        <div class="column is-4 is-offset-4">
+            {% if error %}
+                <div class="notification is-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="notification is-success">
+                    You are logged in
+                    as {{ app.user.username }}
+                    , <a
+                            href="{{ path('app_logout') }}">Logout</a>
+                </div>
+
+            {% endif %}
+            <form method="post">
+                <div class="field">
+                    <p class="control has-icons-left">
+                        <label for="inputEmail"></label>
+                        <input class="input is-medium"
+                               type="email"
+                               placeholder="Email"
+                               value="{{ last_username }}"
+                               name="email"
+                               id="inputEmail"
+                               required
+                               autofocus>
+                        <span class="icon is-small is-left">
+		      <i class="fa fa-envelope"></i>
+		    </span>
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control has-icons-left">
+                        <label for="inputPassword"></label>
+                        <input class="input is-medium"
+                               placeholder="Password"
+                               type="password"
+                               name="password"
+                               id="inputPassword"
+                               required>
+                        <span class="icon is-small is-left">
+		      <i class="fa fa-lock"></i>
+		    </span>
+                    </p>
+                </div>
+                <input type="hidden"
+                       name="_csrf_token"
+                       value="{{ csrf_token('authenticate') }}">
+                {#end csrf token#}
+                <div class="field">
+                    <p class="control">
+                        <button class="button bt-dark"
+                                type="submit">
+                            Sign in
+                        </button>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
