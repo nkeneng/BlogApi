@@ -1,56 +1,49 @@
+
 security:
-  encoders:
-    App\Entity\User:
-      algorithm: bcrypt
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+  encoders:
+    App\Entity\User: bcrypt
   providers:
     database:
       entity:
         class: App\Entity\User
-        property: username
-#    users_in_memory: { memory: null }
+        property: email
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-    login:
-      pattern:  ^/api/login
+    api:
+      pattern: ^/api
       stateless: true
       anonymous: true
       json_login:
-        check_path:               /api/login_check
-        success_handler:          App\Security\OnAuthenticationSuccess
-        failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-      user_checker: App\Security\UserEnabledChecker
-    api:
-      pattern:   ^/api
-      stateless: true
-      anonymous: true
+        # Here authentication will happen (token generation)
+        check_path: /api/login_check
+        # Handle successfull authentication
+        success_handler: App\Security\OnAuthenticationSuccess
+        # Handle authentication failure (invalid credentials, no credentials etc).
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
       guard:
         authenticators:
-          # * because the new authenticator extends from the  lexik_jwt_authentication.jwt_token_authenticator
-#          - lexik_jwt_authentication.jwt_token_authenticator
+          #                    - lexik_jwt_authentication.jwt_token_authenticator
           - App\Security\TokenAuthenticator
+      user_checker: App\Security\UserEnabledChecker
     admin:
       pattern: ^/
-      anonymous: lazy
-      guard:
-        authenticators:
-          - App\Security\LoginFormAuthenticator
-        entry_point: App\Security\LoginFormAuthenticator
+      anonymous: true
+      form_login:
+        check_path: security_login
+        login_path: security_login
+        default_target_path: admin
+        use_referer: true
       logout:
         path: security_logout
 
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
-    # if i put ^/api first then the second rule ^/api/login will never be cached
-    # so the order is really important
-#    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/admin, roles: ROLE_EDITOR }
+    - { path: ^/login,     roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/admin,     roles: ROLE_SUPERADMIN }
+    - { path: ^/api,       roles: IS_AUTHENTICATED_ANONYMOUSLY }
   role_hierarchy:
-    ROLE_WRITER: ROLE_COMMENTATOR
-    ROLE_ADMIN: [ROLE_WRITER,ROLE_EDITOR]
-    ROLE_SUPERADMIN: ROLE_ADMIN
+    ROLE_SUPERADMIN: ROLE_USER

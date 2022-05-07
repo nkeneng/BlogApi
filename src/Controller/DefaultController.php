@@ -24,6 +24,7 @@ class DefaultController extends AbstractController
      * @param string $token
      * @param UserConfirmationService $confirmationService
      * @return RedirectResponse
+     * @throws \App\Exception\InvalidConfirmationTokenException
      */
     public function confirmUser(string $token,UserConfirmationService $confirmationService)
     {

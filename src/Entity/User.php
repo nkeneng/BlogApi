@@ -61,12 +61,9 @@ use App\Controller\ResetPasswordAction;
  */
 class User implements UserInterface
 {
-    const ROLE_COMMENTATOR = 'ROLE_COMMENTATOR';
-    const ROLE_WRITER = 'ROLE_WRITER';
-    const ROLE_EDITOR = 'ROLE_EDITOR';
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_USER = 'ROLE_USER';
     const ROLE_SUPERADMIN = 'ROLE_SUPERADMIN';
-    const DEFAULT_ROLES = [self::ROLE_COMMENTATOR];
+    const DEFAULT_ROLES = [self::ROLE_USER];
 
 
     /**
@@ -134,18 +131,6 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @ORM\OneToMany(targetEntity=BlogPost::class, mappedBy="author")
-     * @Groups({"get"})
-     */
-    private $blogPosts;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="author")
-     * @Groups({"get"})
-     */
-    private $comments;
-
-    /**
      * @ORM\Column(type="simple_array", length=200)
      * @Groups({"admin_readable","user_readable"})
      */
@@ -205,8 +190,6 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $this->blogPosts = new ArrayCollection();
-        $this->comments = new ArrayCollection();
         $this->roles = self::DEFAULT_ROLES;
         $this->enabled = false;
         $this->passwordChangeDate = null;
@@ -265,69 +248,6 @@ class User implements UserInterface
 
         return $this;
     }
-
-    /**
-     * @return Collection|BlogPost[]
-     */
-    public function getBlogPosts(): Collection
-    {
-        return $this->blogPosts;
-    }
-
-    public function addBlogPost(BlogPost $blogPost): self
-    {
-        if (!$this->blogPosts->contains($blogPost)) {
-            $this->blogPosts[] = $blogPost;
-            $blogPost->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBlogPost(BlogPost $blogPost): self
-    {
-        if ($this->blogPosts->contains($blogPost)) {
-            $this->blogPosts->removeElement($blogPost);
-            // set the owning side to null (unless algety changed)
-            if ($blogPost->getAuthor() === $this) {
-                $blogPost->setAuthor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Comment[]
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(Comment $comment): self
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): self
-    {
-        if ($this->comments->contains($comment)) {
-            $this->comments->removeElement($comment);
-            // set the owning side to null (unless algety changed)
-            if ($comment->getAuthor() === $this) {
-                $comment->setAuthor(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getRoles(): array
     {
         return $this->roles;

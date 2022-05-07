@@ -36,7 +36,7 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Blog Posts', 'fa fa-tags', BlogPost::class),
             MenuItem::linkToCrud('Comments', 'fa fa-comments', Comment::class),
             MenuItem::linkToCrud('Users', 'fa fa-users', User::class)
-                ->setPermission('ROLE_ADMIN'),
+                ->setPermission('ROLE_SUPERADMIN'),
             MenuItem::linkToCrud('Images', 'fa fa-images', Image::class),
 
             MenuItem::linkToLogout('Logout', 'fa fa-exit'),
